@@ -12,11 +12,13 @@ public class App
   private static TextureCache cache;
   
   public static String factorioPath = 
-      "/Volumes/OSX Data/Games/Steam/SteamApps/common/Factorio/factorio.app/Contents" +
-      "/data/base/graphics/entity/";
+    //"/Volumes/OSX Data/Games/Steam/SteamApps/" +
+	  "/Users/jack/Library/Application Support/Steam/steamapps/" +
+    "common/Factorio/factorio.app/Contents" +
+    "/data/base/graphics/entity/";
   
   
-  public static void main( String[] args )
+  public static void main(String[] args)
   {
     cache = new TextureCache(s -> sketch.loadImage(s));
 

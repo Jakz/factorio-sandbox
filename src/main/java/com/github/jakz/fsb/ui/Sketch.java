@@ -7,10 +7,15 @@ import javax.swing.event.*;
 import com.github.jakz.fsb.App;
 import com.github.jakz.fsb.entity.Belt;
 import com.github.jakz.fsb.entity.BeltType;
+import com.github.jakz.fsb.entity.Entity;
 import com.github.jakz.fsb.gfx.BeltDrawer;
 import com.github.jakz.fsb.gfx.GfxEnvironment;
+import com.github.jakz.fsb.gfx.Painter;
+import com.github.jakz.fsb.gfx.PainterMap;
 import com.github.jakz.fsb.gfx.Texture;
 import com.github.jakz.fsb.gfx.TextureCache;
+import com.github.jakz.fsb.map.Chunk;
+import com.github.jakz.fsb.map.Tile;
 import com.pixbits.lib.lang.Point;
 import com.pixbits.lib.lang.Rect;
 
@@ -34,7 +39,13 @@ public class Sketch extends PApplet implements ChangeListener, MouseListener, Mo
   long ticks = 0;
   long elapsed;
   
-  BeltDrawer drawer = new BeltDrawer(this);
+  PainterMap<Entity> painters = new PainterMap<>();
+  Chunk chunk = new Chunk();
+  
+  int VIEWPORT_WIDTH = 16;
+  int VIEWPORT_HEIGHT = 16;
+  
+  int TILE_SIZE = 32;
   
   public void setup()
   {
@@ -42,8 +53,15 @@ public class Sketch extends PApplet implements ChangeListener, MouseListener, Mo
     
     font = this.loadImage(getClass().getResource("/com/github/jakz/fsb/gfx/font.png").getPath());
     
-    size(800,600, PApplet.P2D);
+    size(TILE_SIZE*VIEWPORT_WIDTH,TILE_SIZE*VIEWPORT_HEIGHT, PApplet.P2D);
     frameRate(60.0f);
+    
+    chunk.allocate();
+    chunk.tile(0, 0).entity(new Belt(BeltType.NORMAL));
+    chunk.tile(1, 0).entity(new Belt(BeltType.FAST));
+
+    
+    painters.registerType(Belt.class, new BeltDrawer(this));
     
     //textFont(font1);
     //textSize(20);
@@ -69,18 +87,22 @@ public class Sketch extends PApplet implements ChangeListener, MouseListener, Mo
     
     background(170);
     
-    Belt belt1 = new Belt();
-    belt1.type(BeltType.NORMAL);
-    
-    Belt belt2 = new Belt();
-    belt2.type(BeltType.FAST);
-    
-    for (int i = 0; i < 5; ++i)
+    for (int x = 0; x < VIEWPORT_WIDTH; ++x)
     {
-      //drawer.draw(belt2, new Point(32*i,0));
-      //drawer.draw(belt2, new Point(32*i,36));
-
+      for (int y = 0; y < VIEWPORT_HEIGHT; ++y)
+      {
+        Tile tile = chunk.tile(x, y);
+        Entity entity = tile.entity();
+        
+        if (entity != null)
+        {
+          Painter<Entity> painter = painters.find(entity);
+          painter.draw(entity, x * TILE_SIZE, y * TILE_SIZE);
+        }
+      }
+        
     }
+
     
     fill(Color.BLACK);
     drawText(String.format("TICKS %d : TIME %2.2f : FPS %2.2f", ticks, seconds(), this.frameRate), 20, height - 30);

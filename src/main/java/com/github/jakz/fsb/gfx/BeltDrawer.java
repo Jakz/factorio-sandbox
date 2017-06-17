@@ -6,7 +6,7 @@ import com.pixbits.lib.lang.Point;
 
 import processing.core.PImage;
 
-public class BeltDrawer implements Drawer<Belt>
+public class BeltDrawer implements Painter<Belt>
 {
   enum TextureID
   {
@@ -55,7 +55,7 @@ public class BeltDrawer implements Drawer<Belt>
     this.env = env;
   }
 
-  @Override public void draw(Belt entity, Point position)
+  @Override public void draw(Belt entity, int x, int y)
   {
     TextureID textureID = textures[entity.type().ordinal()];
     Texture texture = textureID.get();
@@ -65,7 +65,7 @@ public class BeltDrawer implements Drawer<Belt>
     
     //System.out.printf("period: %2.2f, seconds: %2.2f, percent: %2.2f\n", period, env.seconds(), percent);
     
-    env.drawImage(texture, 40*(int)(percent*(textureID.ticks-1)), 0, 40, 40, (int)position.x, (int)position.y);
+    env.drawImage(texture, 40*(int)(percent*(textureID.ticks-1)), 0, 40, 40, x, y);
     
   }
 
