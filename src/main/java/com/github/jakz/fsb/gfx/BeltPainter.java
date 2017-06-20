@@ -2,11 +2,12 @@ package com.github.jakz.fsb.gfx;
 
 import com.github.jakz.fsb.App;
 import com.github.jakz.fsb.entity.Belt;
+import com.github.jakz.fsb.entity.BeltFacing;
 import com.pixbits.lib.lang.Point;
 
 import processing.core.PImage;
 
-public class BeltDrawer implements Painter<Belt>
+public class BeltPainter implements Painter<Belt>
 {
   enum TextureID
   {
@@ -50,7 +51,7 @@ public class BeltDrawer implements Painter<Belt>
   
   private final GfxEnvironment env;
   
-  public BeltDrawer(GfxEnvironment env)
+  public BeltPainter(GfxEnvironment env)
   {
     this.env = env;
   }
@@ -62,10 +63,24 @@ public class BeltDrawer implements Painter<Belt>
     
     float period = 1.0f / textureID.speed;
     float percent = (env.seconds() % period) / period;
+        
+    int column = 0;
+    BeltFacing facing = entity.facing();
     
-    //System.out.printf("period: %2.2f, seconds: %2.2f, percent: %2.2f\n", period, env.seconds(), percent);
+    switch (facing)
+    {
+      case NORTH:
+      {
+        column = 1;
+        break;
+      }
     
-    env.drawImage(texture, 40*(int)(percent*(textureID.ticks-1)), 0, 40, 40, x, y);
+    }
+   
+    
+    env.drawImage(texture, 40*(int)(percent*(textureID.ticks-1)), 0, 40, 40, x, y, 45);
+    
+    
     
   }
 

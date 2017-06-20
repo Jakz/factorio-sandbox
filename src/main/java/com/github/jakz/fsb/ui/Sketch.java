@@ -6,9 +6,10 @@ import javax.swing.event.*;
 
 import com.github.jakz.fsb.App;
 import com.github.jakz.fsb.entity.Belt;
+import com.github.jakz.fsb.entity.BeltFacing;
 import com.github.jakz.fsb.entity.BeltType;
 import com.github.jakz.fsb.entity.Entity;
-import com.github.jakz.fsb.gfx.BeltDrawer;
+import com.github.jakz.fsb.gfx.BeltPainter;
 import com.github.jakz.fsb.gfx.GfxEnvironment;
 import com.github.jakz.fsb.gfx.Painter;
 import com.github.jakz.fsb.gfx.PainterMap;
@@ -57,11 +58,11 @@ public class Sketch extends PApplet implements ChangeListener, MouseListener, Mo
     frameRate(60.0f);
     
     chunk.allocate();
-    chunk.tile(0, 0).entity(new Belt(BeltType.NORMAL));
-    chunk.tile(1, 0).entity(new Belt(BeltType.FAST));
+    chunk.tile(0, 0).entity(new Belt(BeltType.NORMAL, BeltFacing.NORTH));
+    chunk.tile(1, 0).entity(new Belt(BeltType.FAST, BeltFacing.NORTH));
 
     
-    painters.registerType(Belt.class, new BeltDrawer(this));
+    painters.registerType(Belt.class, new BeltPainter(this));
     
     //textFont(font1);
     //textSize(20);
@@ -105,7 +106,10 @@ public class Sketch extends PApplet implements ChangeListener, MouseListener, Mo
 
     
     fill(Color.BLACK);
+    pushMatrix();
+    rotate(PI/2);
     drawText(String.format("TICKS %d : TIME %2.2f : FPS %2.2f", ticks, seconds(), this.frameRate), 20, height - 30);
+    popMatrix();
     
     ++ticks;
   }
@@ -131,7 +135,7 @@ public class Sketch extends PApplet implements ChangeListener, MouseListener, Mo
       x += W + PS;
     }
   }
-
+  
   public void keyPressed()
   {
 
@@ -210,7 +214,23 @@ public class Sketch extends PApplet implements ChangeListener, MouseListener, Mo
   @Override
   public void drawImage(Texture texture, int x, int y, int w, int h, int dx, int dy)
   {
+    //this.image(texture.image, x, y, dx, dy);
     this.blend(texture.image, x, y, w, h, dx, dy, w, h, PApplet.BLEND);
+  }
+  
+  public void drawImage(Texture texture, int x, int y, int w, int h, int dx, int dy, int a)
+  {
+    if (a != 0)
+    {
+      this.pushMatrix();
+      this.translate(40, 40);
+      //this.rotate(a);
+    }
+    
+    drawImage(texture, x, y, w, h, dx, dy);
+    
+    if (a != 0)
+      this.popMatrix();
   }
   
   @Override public long ticks() { return ticks; }
